@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>camunda-poc</groupId>
-    <artifactId>camunda-poc-back</artifactId>
+    <artifactId>camunda-8-benchmark</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>camunda-poc-back</name>
-    <description>camunda-poc-back</description>
+    <name>camunda-8-benchmark</name>
+    <description>camunda-8-benchmark</description>
     <properties>
         <java.version>17</java.version>
     </properties>

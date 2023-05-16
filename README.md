@@ -1,5 +1,5 @@
-# camunda-poc-back
-Backend app of proof-of-concept for Camunda 8
+# camunda-8-benchmark
+Benchmarking app for Camunda 8
 
 ## Camunda Platform 8 Self-Managed
 To stand-up a complete Camunda Platform 8 Self-Managed environment locally,
