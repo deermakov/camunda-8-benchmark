@@ -1,5 +1,7 @@
 package benchmark.adapter.zeebe;
 
+import benchmark.app.api.BpmnEngine;
+import benchmark.app.api.ServiceTaskInbound;
 import io.camunda.zeebe.client.api.response.ActivatedJob;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import io.camunda.zeebe.spring.client.annotation.JobWorker;
@@ -7,10 +9,7 @@ import io.camunda.zeebe.spring.client.lifecycle.ZeebeClientLifecycle;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import benchmark.app.api.BpmnEngine;
-import benchmark.app.api.ServiceTaskInbound;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @Component
@@ -25,7 +24,7 @@ public class ZeebeAdapter implements BpmnEngine {
     private final String PROCESS_DEFINITION_ID = "process-1";
 
     @Override
-    public void startProcess(Map<String, Object> variables) {
+    public long startProcess(Map<String, Object> variables) {
 
         final ProcessInstanceEvent event =
             client
@@ -41,6 +40,8 @@ public class ZeebeAdapter implements BpmnEngine {
             event.getBpmnProcessId(),
             event.getVersion(),
             event.getProcessInstanceKey());
+
+        return event.getProcessInstanceKey();
     }
 
     @Override

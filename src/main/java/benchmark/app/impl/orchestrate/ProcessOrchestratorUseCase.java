@@ -1,11 +1,12 @@
 package benchmark.app.impl.orchestrate;
 
 import benchmark.app.api.BpmnEngine;
+import benchmark.app.impl.TaskList;
+import benchmark.domain.bpmn.BpmnUserTask;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Optional;
 
 /**
  * Оркестратор процесса
@@ -15,11 +16,14 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ProcessOrchestratorUseCase {
     private final BpmnEngine bpmnEngine;
+    private final TaskList taskList;
 
     public void execute() {
-        bpmnEngine.startProcess(null);
+        long processInstanceKey = bpmnEngine.startProcess(null);
 
-        long taskKey = -1;
+        // todo пауза по появления id таски из elastic'а (должна быть > 1 сек)
+        Optional<BpmnUserTask> userTask = taskList.getActiveUserTasks(processInstanceKey, "user").stream().findFirst();
+        long taskKey = userTask.map(BpmnUserTask::getKey).orElse(null);
         bpmnEngine.performUserTask(taskKey, null);
     }
 }
