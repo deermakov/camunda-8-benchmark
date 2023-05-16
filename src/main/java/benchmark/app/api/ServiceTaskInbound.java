@@ -1,5 +1,7 @@
 package benchmark.app.api;
 
+import java.util.Map;
+
 public interface ServiceTaskInbound {
-    String execute(String startParam, String inputData);
+    void execute(Map<String, Object> variables);
 }

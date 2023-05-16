@@ -1,14 +1,15 @@
-package benchmark.app.impl;
+package benchmark.app.impl.work;
 
 import org.springframework.stereotype.Component;
 import benchmark.app.api.ServiceTaskInbound;
 
 import java.text.MessageFormat;
+import java.util.Map;
 
 @Component
 public class ServiceTaskUseCase implements ServiceTaskInbound {
     @Override
-    public String execute(String startParam, String inputData) {
-        return MessageFormat.format("{0} {1}", startParam, inputData);
+    public void execute(Map<String, Object> variables) {
+        variables.put("key1", "value1");
     }
 }

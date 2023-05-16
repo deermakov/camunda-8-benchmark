@@ -1,7 +1,9 @@
 package benchmark.app.api;
 
-public interface BpmnEngine {
-    void startProcess(String startParam, String processExternalId);
+import java.util.Map;
 
-    void performUserTask(long taskKey, String inputData);
+public interface BpmnEngine {
+    void startProcess(Map<String, Object> variables);
+
+    void performUserTask(long taskKey, Map<String, Object> variables);
 }

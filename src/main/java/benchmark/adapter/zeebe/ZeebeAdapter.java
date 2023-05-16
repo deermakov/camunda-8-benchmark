@@ -25,10 +25,7 @@ public class ZeebeAdapter implements BpmnEngine {
     private final String PROCESS_DEFINITION_ID = "process-1";
 
     @Override
-    public void startProcess(String startParam, String processExternalId) {
-        Map<String, Object> variables = new HashMap<>();
-        variables.put("startParam", startParam);
-        variables.put("processExternalId", processExternalId);
+    public void startProcess(Map<String, Object> variables) {
 
         final ProcessInstanceEvent event =
             client
@@ -39,19 +36,19 @@ public class ZeebeAdapter implements BpmnEngine {
                 .send()
                 .join();
 
-        log.info("startProcess(): process started for processExternalId = {}, processDefinitionKey={}, bpmnProcessId={}, version={}, processInstanceKey={}",
-            processExternalId, event.getProcessDefinitionKey(), event.getBpmnProcessId(), event.getVersion(), event.getProcessInstanceKey());
+        log.info("startProcess(): process started with processDefinitionKey={}, bpmnProcessId={}, version={}, processInstanceKey={}",
+            event.getProcessDefinitionKey(),
+            event.getBpmnProcessId(),
+            event.getVersion(),
+            event.getProcessInstanceKey());
     }
 
     @Override
-    public void performUserTask(long taskKey, String inputData) {
+    public void performUserTask(long taskKey, Map<String, Object> variables) {
 
-        log.info("performUserTask(): taskKey = {}, inputData = {}", taskKey, inputData);
+        log.info("performUserTask(): taskKey = {}, variables = {}", taskKey, variables);
 
         //long taskKey = userTaskInfoHolder.getUserTaskKey(processExternalId, "input-data");
-
-        Map<String, Object> variables = new HashMap<>();
-        variables.put("inputData", inputData);
 
         client
             .newCompleteCommand(taskKey)
@@ -81,14 +78,10 @@ public class ZeebeAdapter implements BpmnEngine {
     @JobWorker(type = "service-task-1", autoComplete = false)
     public void performServiceTask(final ActivatedJob job) {
 
-        String startParam = (String) job.getVariablesAsMap().get("startParam");
-        String inputData = (String) job.getVariablesAsMap().get("inputData");
-
-        String processedData = serviceTaskInbound.execute(startParam, inputData);
-        log.info("performServiceTask: {}", processedData);
-
-        Map<String, Object> variables = new HashMap<>();
-        variables.put("processedData", processedData);
+        Map<String, Object> variables = job.getVariablesAsMap();
+        log.info("performServiceTask() before: {}", variables);
+        serviceTaskInbound.execute(variables);
+        log.info("performServiceTask() after: {}", variables);
 
         client
             .newCompleteCommand(job.getKey())
