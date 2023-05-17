@@ -21,15 +21,14 @@ public class ZeebeAdapter implements BpmnEngine {
 
     private final ServiceTaskInbound serviceTaskInbound;
 
-    private final String PROCESS_DEFINITION_ID = "process-1";
 
     @Override
-    public long startProcess(Map<String, Object> variables) {
+    public long startProcess(String processDefinitionId, Map<String, Object> variables) {
 
         final ProcessInstanceEvent event =
             client
                 .newCreateInstanceCommand()
-                .bpmnProcessId(PROCESS_DEFINITION_ID)
+                .bpmnProcessId(processDefinitionId)
                 .latestVersion()
                 .variables(variables)
                 .send()

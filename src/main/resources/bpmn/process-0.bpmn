@@ -1,29 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_182kbex" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.5.1" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.1.0">
-  <bpmn:process id="process-1" isExecutable="true">
+  <bpmn:process id="process-0" isExecutable="true">
     <bpmn:startEvent id="StartEvent_1">
       <bpmn:outgoing>Flow_0k42gxd</bpmn:outgoing>
     </bpmn:startEvent>
-    <bpmn:sequenceFlow id="Flow_0k42gxd" sourceRef="StartEvent_1" targetRef="user-task-1" />
+    <bpmn:sequenceFlow id="Flow_0k42gxd" sourceRef="StartEvent_1" targetRef="service-task-1" />
     <bpmn:endEvent id="Event_1vt9vp4">
       <bpmn:incoming>Flow_0sgcbep</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:userTask id="user-task-1" name="User Task 1">
-      <bpmn:extensionElements>
-        <zeebe:assignmentDefinition assignee="user" />
-      </bpmn:extensionElements>
-      <bpmn:incoming>Flow_0k42gxd</bpmn:incoming>
-      <bpmn:outgoing>Flow_1p9m9ep</bpmn:outgoing>
-    </bpmn:userTask>
     <bpmn:serviceTask id="service-task-1" name="Service Task 1">
       <bpmn:extensionElements>
         <zeebe:taskDefinition type="service-task-1" />
       </bpmn:extensionElements>
-      <bpmn:incoming>Flow_1p9m9ep</bpmn:incoming>
+      <bpmn:incoming>Flow_0k42gxd</bpmn:incoming>
       <bpmn:outgoing>Flow_0sgcbep</bpmn:outgoing>
     </bpmn:serviceTask>
     <bpmn:sequenceFlow id="Flow_0sgcbep" sourceRef="service-task-1" targetRef="Event_1vt9vp4" />
-    <bpmn:sequenceFlow id="Flow_1p9m9ep" sourceRef="user-task-1" targetRef="service-task-1" />
   </bpmn:process>
   <bpmn:message id="Message_26sqk3s" name="terminate">
     <bpmn:extensionElements>
@@ -31,32 +23,24 @@
     </bpmn:extensionElements>
   </bpmn:message>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
-    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="process-1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="process-0">
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
         <dc:Bounds x="179" y="99" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_1vt9vp4_di" bpmnElement="Event_1vt9vp4">
-        <dc:Bounds x="642" y="99" width="36" height="36" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_0bg8k5z_di" bpmnElement="user-task-1">
-        <dc:Bounds x="280" y="77" width="100" height="80" />
-        <bpmndi:BPMNLabel />
+        <dc:Bounds x="552" y="99" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_15ibxt3_di" bpmnElement="service-task-1">
-        <dc:Bounds x="460" y="77" width="100" height="80" />
+        <dc:Bounds x="330" y="77" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_0k42gxd_di" bpmnElement="Flow_0k42gxd">
         <di:waypoint x="215" y="117" />
-        <di:waypoint x="280" y="117" />
+        <di:waypoint x="330" y="117" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0sgcbep_di" bpmnElement="Flow_0sgcbep">
-        <di:waypoint x="560" y="117" />
-        <di:waypoint x="642" y="117" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1p9m9ep_di" bpmnElement="Flow_1p9m9ep">
-        <di:waypoint x="380" y="117" />
-        <di:waypoint x="460" y="117" />
+        <di:waypoint x="430" y="117" />
+        <di:waypoint x="552" y="117" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

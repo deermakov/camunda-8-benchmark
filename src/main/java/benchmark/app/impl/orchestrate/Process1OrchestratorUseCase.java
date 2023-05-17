@@ -6,20 +6,25 @@ import benchmark.domain.bpmn.BpmnUserTask;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 /**
- * Оркестратор процесса
+ * Оркестратор процесса process-1.bpmn
  * Имитирует действия внешних участников - напр. пользователей или интегрируемых систем
  */
 @Component
 @RequiredArgsConstructor
-public class ProcessOrchestratorUseCase {
+public class Process1OrchestratorUseCase {
+    private final String PROCESS_DEFINITION_ID = "process-1";
+
     private final BpmnEngine bpmnEngine;
     private final TaskList taskList;
 
     public void execute() {
-        long processInstanceKey = bpmnEngine.startProcess(null);
+        Map<String, Object> variables = new HashMap<>();
+        long processInstanceKey = bpmnEngine.startProcess(PROCESS_DEFINITION_ID,variables);
 
         // todo пауза по появления id таски из elastic'а (должна быть > 1 сек)
         Optional<BpmnUserTask> userTask = taskList.getActiveUserTasks(processInstanceKey, "user").stream().findFirst();

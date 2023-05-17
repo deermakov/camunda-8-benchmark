@@ -9,7 +9,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication(scanBasePackages = "benchmark")
 @EnableZeebeClient
 @EnableScheduling
-@Deployment(resources = "classpath:bpmn/benchmark-process.bpmn")
+@Deployment(resources = {"classpath:bpmn/process-0.bpmn", "classpath:bpmn/process-1.bpmn"})
 public class Application {
 
     public static void main(String[] args) {
