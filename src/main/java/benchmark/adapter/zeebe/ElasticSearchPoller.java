@@ -76,7 +76,7 @@ public class ElasticSearchPoller {
         """;
     private long lastPosition = 0;
 
-    @Scheduled(fixedRate = 2000)
+    //@Scheduled(fixedRate = 2000)
     public <T extends RecordValue> void poll() {
         log.info("poll(): lastPosition = {}", lastPosition);
 

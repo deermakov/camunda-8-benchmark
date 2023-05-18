@@ -16,7 +16,7 @@ import java.util.Optional;
  */
 @Component
 @RequiredArgsConstructor
-public class Process1OrchestratorUseCase {
+public class Process1Orchestrator {
     private final String PROCESS_DEFINITION_ID = "process-1";
 
     private final BpmnEngine bpmnEngine;

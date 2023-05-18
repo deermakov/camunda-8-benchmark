@@ -2,6 +2,7 @@ package benchmark.adapter.zeebe;
 
 import benchmark.app.api.BpmnEngine;
 import benchmark.app.api.ServiceTaskInbound;
+import io.camunda.zeebe.client.api.command.ClientStatusException;
 import io.camunda.zeebe.client.api.response.ActivatedJob;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import io.camunda.zeebe.spring.client.annotation.JobWorker;
@@ -25,22 +26,27 @@ public class ZeebeAdapter implements BpmnEngine {
     @Override
     public long startProcess(String processDefinitionId, Map<String, Object> variables) {
 
-        final ProcessInstanceEvent event =
-            client
-                .newCreateInstanceCommand()
-                .bpmnProcessId(processDefinitionId)
-                .latestVersion()
-                .variables(variables)
-                .send()
-                .join();
+        try {
+            final ProcessInstanceEvent event =
+                client
+                    .newCreateInstanceCommand()
+                    .bpmnProcessId(processDefinitionId)
+                    .latestVersion()
+                    .variables(variables)
+                    .send()
+                    .join();
 
-        log.info("startProcess(): process started with processDefinitionKey={}, bpmnProcessId={}, version={}, processInstanceKey={}",
-            event.getProcessDefinitionKey(),
-            event.getBpmnProcessId(),
-            event.getVersion(),
-            event.getProcessInstanceKey());
+            log.info("startProcess(): process started with processDefinitionKey={}, bpmnProcessId={}, version={}, processInstanceKey={}",
+                event.getProcessDefinitionKey(),
+                event.getBpmnProcessId(),
+                event.getVersion(),
+                event.getProcessInstanceKey());
 
-        return event.getProcessInstanceKey();
+            return event.getProcessInstanceKey();
+        } catch (ClientStatusException e){
+            log.error("startProcess() got error", e);
+            return -1;
+        }
     }
 
     @Override
