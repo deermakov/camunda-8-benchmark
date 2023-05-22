@@ -1,6 +1,7 @@
 package benchmark.app.impl.orchestrate;
 
 import benchmark.app.api.BpmnEngine;
+import benchmark.app.impl.StatisticsCollector;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,7 @@ import java.util.Map;
 public class Process0Orchestrator {
     private final String PROCESS_DEFINITION_ID = "process-0";
     private final BpmnEngine bpmnEngine;
+    private final StatisticsCollector statisticsCollector;
 
     @Autowired
     private final ApplicationContext applicationContext;
@@ -56,6 +58,7 @@ public class Process0Orchestrator {
                 log.error("", e);
             }
         }
+        statisticsCollector.incStartedProcessInstances();
     }
 
 }
