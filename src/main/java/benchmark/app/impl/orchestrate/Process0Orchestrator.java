@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Оркестратор процесса process-0.bpmn
@@ -26,6 +27,9 @@ public class Process0Orchestrator {
     private final String PROCESS_DEFINITION_ID = "process-0";
     private final BpmnEngine bpmnEngine;
     private final StatisticsCollector statisticsCollector;
+
+    private AtomicLong lastStartProcessErrorTime = new AtomicLong();
+    private AtomicLong startedProcessInstances = new AtomicLong(0);
 
     @Autowired
     private final ApplicationContext applicationContext;
@@ -40,8 +44,15 @@ public class Process0Orchestrator {
     @EventListener(ApplicationReadyEvent.class)
     public void start() {
         Process0Orchestrator myself = applicationContext.getBean(Process0Orchestrator.class);
-        for (int i = 1; i <= 1000; i++) {
-            myself.startProcessInstance();
+        while(startedProcessInstances.get() < 10000){
+            try {
+                Thread.sleep(10);
+            } catch (Exception e) {
+                log.error("", e);
+            }
+            if (System.currentTimeMillis() - lastStartProcessErrorTime.get() > 25) {
+                myself.startProcessInstance();
+            }
         }
         log.info("All process '{}' instances are started", PROCESS_DEFINITION_ID);
     }
@@ -49,16 +60,13 @@ public class Process0Orchestrator {
     @Async
     public void startProcessInstance() {
         Map<String, Object> variables = new HashMap<>();
-        long processInstanceId = -1;
-        while (processInstanceId < 0){
-            processInstanceId = bpmnEngine.startProcess(PROCESS_DEFINITION_ID, variables);
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e){
-                log.error("", e);
-            }
+        long processInstanceId = bpmnEngine.startProcess(PROCESS_DEFINITION_ID, variables);
+        if (processInstanceId < 0) {
+            lastStartProcessErrorTime.set(System.currentTimeMillis());
+        } else {
+            startedProcessInstances.incrementAndGet();
+            statisticsCollector.incStartedProcessInstances();
         }
-        statisticsCollector.incStartedProcessInstances();
     }
 
 }
