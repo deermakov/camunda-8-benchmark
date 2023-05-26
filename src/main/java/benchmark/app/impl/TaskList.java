@@ -11,9 +11,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * todo Document type TaskList
- */
 @Component
 @Getter
 @Slf4j

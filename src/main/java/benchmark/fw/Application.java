@@ -10,7 +10,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication(scanBasePackages = "benchmark")
 @EnableZeebeClient
 @EnableScheduling
-@EnableAsync
 @Deployment(resources = {"classpath:bpmn/process-0.bpmn", "classpath:bpmn/process-1.bpmn"})
 public class Application {
 

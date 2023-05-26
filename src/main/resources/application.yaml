@@ -1,6 +1,7 @@
 zeebe.client:
   broker.gatewayAddress: 127.0.0.1:26500
   security.plaintext: true
+  worker.threads: 1
 
 server:
   port: 8090

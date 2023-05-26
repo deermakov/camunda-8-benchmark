@@ -3,9 +3,6 @@ package benchmark.domain.bpmn;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-/**
- * todo Document type BpmnUserTask
- */
 @Data
 @AllArgsConstructor
 public class BpmnUserTask {

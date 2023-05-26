@@ -8,9 +8,6 @@ import lombok.ToString;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * todo Document type BpmnProcess
- */
 @Data
 @AllArgsConstructor
 public class BpmnProcess {

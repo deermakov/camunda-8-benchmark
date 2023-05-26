@@ -46,7 +46,7 @@ public class Process0Orchestrator {
         Process0Orchestrator myself = applicationContext.getBean(Process0Orchestrator.class);
         while(startedProcessInstances.get() < 10000){
             try {
-                Thread.sleep(10);
+                Thread.sleep(5);
             } catch (Exception e) {
                 log.error("", e);
             }
@@ -57,12 +57,17 @@ public class Process0Orchestrator {
         log.info("All process '{}' instances are started", PROCESS_DEFINITION_ID);
     }
 
-    @Async
+    @Async("processStartExecutor")
     public void startProcessInstance() {
+        if (startedProcessInstances.get() % 100 == 0){
+            log.info("Starting {} processes", startedProcessInstances.get());
+        }
+
         Map<String, Object> variables = new HashMap<>();
         long processInstanceId = bpmnEngine.startProcess(PROCESS_DEFINITION_ID, variables);
         if (processInstanceId < 0) {
             lastStartProcessErrorTime.set(System.currentTimeMillis());
+            statisticsCollector.incStartedProcessInstancesException("");
         } else {
             startedProcessInstances.incrementAndGet();
             statisticsCollector.incStartedProcessInstances();

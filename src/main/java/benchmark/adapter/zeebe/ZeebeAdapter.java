@@ -36,7 +36,7 @@ public class ZeebeAdapter implements BpmnEngine {
                     .send()
                     .join();
 
-            log.info("startProcess(): process started with processDefinitionKey={}, bpmnProcessId={}, version={}, processInstanceKey={}",
+            log.debug("startProcess(): process started with processDefinitionKey={}, bpmnProcessId={}, version={}, processInstanceKey={}",
                 event.getProcessDefinitionKey(),
                 event.getBpmnProcessId(),
                 event.getVersion(),
@@ -83,11 +83,10 @@ public class ZeebeAdapter implements BpmnEngine {
     // autoComplete = false чтобы можно было обновить переменные в процессе, см. в коде
     @JobWorker(type = "service-task-1", autoComplete = false)
     public void performServiceTask(final ActivatedJob job) {
-
         Map<String, Object> variables = job.getVariablesAsMap();
-        log.info("performServiceTask() before: {}", variables);
+        log.debug("performServiceTask() before: {}", variables);
         serviceTaskInbound.execute(variables);
-        log.info("performServiceTask() after: {}", variables);
+        log.debug("performServiceTask() after: {}", variables);
 
         client
             .newCompleteCommand(job.getKey())

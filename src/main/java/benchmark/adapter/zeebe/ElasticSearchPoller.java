@@ -33,9 +33,6 @@ import static io.camunda.zeebe.protocol.record.intent.ProcessInstanceIntent.ELEM
 import static io.camunda.zeebe.protocol.record.intent.ProcessInstanceIntent.ELEMENT_TERMINATED;
 import static io.camunda.zeebe.protocol.record.value.BpmnElementType.PROCESS;
 
-/**
- * todo Document type ElasticSearchPoller
- */
 @Component
 @RequiredArgsConstructor
 @Slf4j
