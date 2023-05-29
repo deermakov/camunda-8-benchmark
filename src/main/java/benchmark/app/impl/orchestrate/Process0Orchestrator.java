@@ -44,13 +44,13 @@ public class Process0Orchestrator {
     @EventListener(ApplicationReadyEvent.class)
     public void start() {
         Process0Orchestrator myself = applicationContext.getBean(Process0Orchestrator.class);
-        while(startedProcessInstances.get() < 10000){
+        while(startedProcessInstances.get() < 100000){
             try {
-                Thread.sleep(5);
+                Thread.sleep(1);
             } catch (Exception e) {
                 log.error("", e);
             }
-            if (System.currentTimeMillis() - lastStartProcessErrorTime.get() > 25) {
+            if (System.currentTimeMillis() - lastStartProcessErrorTime.get() > 1000) {
                 myself.startProcessInstance();
             }
         }

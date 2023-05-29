@@ -14,7 +14,7 @@ public class AsyncConfig {
         public Executor processStartExecutor() {
             ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
             int clusterSize = 3;
-            int threads = clusterSize * 8;
+            int threads = clusterSize * 1;
             executor.setCorePoolSize(threads);
             executor.setMaxPoolSize(threads);
             return executor;
