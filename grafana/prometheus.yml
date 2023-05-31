@@ -15,4 +15,4 @@ scrape_configs:
     metrics_path: /metrics
     scheme: http
     static_configs:
-      - targets: ['host.docker.internal:19600']
+      - targets: ['host.docker.internal:9600','host.docker.internal:19600','host.docker.internal:29600']
