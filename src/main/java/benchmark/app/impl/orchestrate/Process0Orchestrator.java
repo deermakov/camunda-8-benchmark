@@ -62,7 +62,7 @@ public class Process0Orchestrator {
         Map<String, Object> variables = new HashMap<>();
         long processInstanceId = bpmnEngine.startProcess(PROCESS_DEFINITION_ID, variables);
         if (processInstanceId < 0) {// запуск процесса не удался
-            startDelay.addAndGet(10); // увеличиваем задержку (резко)
+            startDelay.updateAndGet(operand -> operand < 98 ? operand+2 : 100); // увеличиваем задержку (резко)
             statisticsCollector.incStartedProcessInstancesException(""); // увеличиваем метрику ошибок запуска процесса
         } else { // запуск процесса удался
             startDelay.updateAndGet(operand -> operand > 1 ? --operand : 1); // уменьшаем задержку (плавно)
