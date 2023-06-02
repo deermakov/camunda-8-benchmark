@@ -19,6 +19,10 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * Оркестратор процесса process-0.bpmn
  * Имитирует действия внешних участников - напр. пользователей или интегрируемых систем
+ *
+ * Реализует адаптивный алгоритм нагрузки:
+ *  при ошибке создания процесса скачком увеличивает задержку до следующей попытки,
+ *  при успешном создании - славно уменьшает задержку
  */
 @Component
 @RequiredArgsConstructor
@@ -28,30 +32,26 @@ public class Process0Orchestrator {
     private final BpmnEngine bpmnEngine;
     private final StatisticsCollector statisticsCollector;
 
-    private AtomicLong lastStartProcessErrorTime = new AtomicLong();
+    private AtomicLong startDelay = new AtomicLong(10);// milliseconds before next process start
     private AtomicLong startedProcessInstances = new AtomicLong(0);
+    private long lastLoggedProcessInstance = 0;
 
     @Autowired
     private final ApplicationContext applicationContext;
-
-    //private Process0Orchestrator myself;
-
-    @PostConstruct
-    protected void selfInject(){
-        //myself = null;//applicationContext.getBean(Process0Orchestrator.class);
-    }
 
     @EventListener(ApplicationReadyEvent.class)
     public void start() {
         Process0Orchestrator myself = applicationContext.getBean(Process0Orchestrator.class);
         while(startedProcessInstances.get() < 100000){
             try {
-                Thread.sleep(1);
+                Thread.sleep(startDelay.get());
+                if (startedProcessInstances.get() - lastLoggedProcessInstance >= 100){
+                    log.info("Starting {} processes, delay = {}", startedProcessInstances.get(), startDelay.get());
+                    lastLoggedProcessInstance += 100;
+                }
+                myself.startProcessInstance();
             } catch (Exception e) {
                 log.error("", e);
-            }
-            if (System.currentTimeMillis() - lastStartProcessErrorTime.get() > 1000) {
-                myself.startProcessInstance();
             }
         }
         log.info("All process '{}' instances are started", PROCESS_DEFINITION_ID);
@@ -59,18 +59,15 @@ public class Process0Orchestrator {
 
     @Async("processStartExecutor")
     public void startProcessInstance() {
-        if (startedProcessInstances.get() % 100 == 0){
-            log.info("Starting {} processes", startedProcessInstances.get());
-        }
-
         Map<String, Object> variables = new HashMap<>();
         long processInstanceId = bpmnEngine.startProcess(PROCESS_DEFINITION_ID, variables);
-        if (processInstanceId < 0) {
-            lastStartProcessErrorTime.set(System.currentTimeMillis());
-            statisticsCollector.incStartedProcessInstancesException("");
-        } else {
-            startedProcessInstances.incrementAndGet();
-            statisticsCollector.incStartedProcessInstances();
+        if (processInstanceId < 0) {// запуск процесса не удался
+            startDelay.addAndGet(10); // увеличиваем задержку (резко)
+            statisticsCollector.incStartedProcessInstancesException(""); // увеличиваем метрику ошибок запуска процесса
+        } else { // запуск процесса удался
+            startDelay.updateAndGet(operand -> operand > 1 ? --operand : 1); // уменьшаем задержку (плавно)
+            startedProcessInstances.incrementAndGet(); // увеличиваем локальный счетчик запущенных процессов
+            statisticsCollector.incStartedProcessInstances(); // увеличиваем метрику успешных запусков процесса
         }
     }
 

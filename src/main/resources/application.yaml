@@ -1,7 +1,8 @@
 zeebe.client:
-  broker.gatewayAddress: 127.0.0.1:26500
+#  broker.gatewayAddress: 127.0.0.1:26500
+  broker.gatewayAddress: 192.168.1.140:26500
   security.plaintext: true
-  worker.threads: 3
+  worker.threads: 100
   worker.maxJobsActive: 1000
 
 server:
