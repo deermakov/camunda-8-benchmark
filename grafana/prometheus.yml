@@ -10,9 +10,27 @@ scrape_configs:
     metrics_path: /actuator/prometheus
     static_configs:
       - targets: ['host.docker.internal:8090']
-  - job_name: zeebe
-    scrape_interval: 15s
+
+  - job_name: 'cluster-gateway'
     metrics_path: /metrics
-    scheme: http
     static_configs:
-      - targets: ['192.168.1.142:9600','192.168.1.142:19600','192.168.1.142:29600','192.168.1.142:39600']
+      - targets: ['192.168.1.142:9600']
+        labels:
+          namespace: 'local'
+          pod: 'cluster-gateway'
+
+  - job_name: 'broker-0'
+    metrics_path: /metrics
+    static_configs:
+      - targets: ['192.168.1.142:19600']
+        labels:
+          namespace: 'local'
+          pod: 'broker-0'
+
+  - job_name: 'broker-1'
+    metrics_path: /metrics
+    static_configs:
+      - targets: ['192.168.1.142:29600']
+        labels:
+          namespace: 'local'
+          pod: 'broker-1' 
