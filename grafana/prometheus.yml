@@ -33,4 +33,12 @@ scrape_configs:
       - targets: ['192.168.1.142:29600']
         labels:
           namespace: 'local'
-          pod: 'broker-1' 
+          pod: 'broker-1'
+
+  - job_name: 'broker-2'
+    metrics_path: /metrics
+    static_configs:
+    - targets: ['192.168.1.142:39600']
+      labels:
+        namespace: 'local'
+        pod: 'broker-2'
