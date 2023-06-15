@@ -42,7 +42,7 @@ public class Process0Orchestrator {
     @EventListener(ApplicationReadyEvent.class)
     public void start() {
         Process0Orchestrator myself = applicationContext.getBean(Process0Orchestrator.class);
-        while(startedProcessInstances.get() < 100000){
+        while(startedProcessInstances.get() < 1000000){
             try {
                 Thread.sleep(startDelay.get());
                 if (startedProcessInstances.get() - lastLoggedProcessInstance >= 100){
