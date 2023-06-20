@@ -42,7 +42,7 @@ public class ZeebeAdapter implements BpmnEngine {
                 event.getProcessInstanceKey());
 
             return event.getProcessInstanceKey();
-        } catch (ClientStatusException e) {
+        } catch (Exception e) {
             log.debug(e.getMessage());
             return -1;
         }
