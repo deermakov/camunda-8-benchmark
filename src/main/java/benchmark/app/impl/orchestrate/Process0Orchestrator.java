@@ -11,7 +11,6 @@ import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
@@ -19,10 +18,10 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * Оркестратор процесса process-0.bpmn
  * Имитирует действия внешних участников - напр. пользователей или интегрируемых систем
- *
+ * <p>
  * Реализует адаптивный алгоритм нагрузки:
- *  при ошибке создания процесса скачком увеличивает задержку до следующей попытки,
- *  при успешном создании - славно уменьшает задержку
+ * при ошибке создания процесса скачком увеличивает задержку до следующей попытки,
+ * при успешном создании - славно уменьшает задержку
  */
 @Component
 @RequiredArgsConstructor
@@ -33,7 +32,8 @@ public class Process0Orchestrator {
     private final StatisticsCollector statisticsCollector;
 
     private AtomicLong startDelay = new AtomicLong(10);// milliseconds before next process start
-    private AtomicLong startedProcessInstances = new AtomicLong(0);
+    private AtomicLong startedProcessInstances = new AtomicLong(0);// кол-во уже запущенных процессов
+    private AtomicLong startingProcessInstances = new AtomicLong(0);// кол-во активных запросов на старт процесса
     private long lastLoggedProcessInstance = 0;
 
     @Autowired
@@ -41,15 +41,21 @@ public class Process0Orchestrator {
 
     @EventListener(ApplicationReadyEvent.class)
     public void start() {
+        final int PROCESSES_TO_START = 1000;
+
         Process0Orchestrator myself = applicationContext.getBean(Process0Orchestrator.class);
-        while(startedProcessInstances.get() < 1000000){
+        while ((startedProcessInstances.get() < PROCESSES_TO_START) || (startingProcessInstances.get() > 0)) {
             try {
                 Thread.sleep(startDelay.get());
-                if (startedProcessInstances.get() - lastLoggedProcessInstance >= 100){
-                    log.info("Starting {} processes, delay = {}", startedProcessInstances.get(), startDelay.get());
-                    lastLoggedProcessInstance += 100;
+
+                if (startedProcessInstances.get() < PROCESSES_TO_START) {// осталось что запускать ?
+                    startedProcessInstances.incrementAndGet();// увеличиваем счетчик (авансом), чтобы "зарезервировать слот"
+                    myself.startProcessInstance();
+                    if (startedProcessInstances.get() - lastLoggedProcessInstance >= 100) {
+                        log.info("Starting {} processes, delay = {}", startedProcessInstances.get(), startDelay.get());
+                        lastLoggedProcessInstance += 100;
+                    }
                 }
-                myself.startProcessInstance();
             } catch (Exception e) {
                 log.error("", e);
             }
@@ -59,16 +65,19 @@ public class Process0Orchestrator {
 
     @Async("processStartExecutor")
     public void startProcessInstance() {
+        startingProcessInstances.incrementAndGet();
+
         Map<String, Object> variables = new HashMap<>();
         long processInstanceId = bpmnEngine.startProcess(PROCESS_DEFINITION_ID, variables);
         if (processInstanceId < 0) {// запуск процесса не удался
-            startDelay.updateAndGet(operand -> operand < 98 ? operand+2 : 100); // увеличиваем задержку (резко)
+            startedProcessInstances.decrementAndGet(); // уменьшаем счетчик (= возвращаем этот слот в очередь на запуск)
+            startDelay.updateAndGet(operand -> operand < 98 ? operand + 2 : 100); // увеличиваем задержку (резко)
             statisticsCollector.incStartedProcessInstancesException(""); // увеличиваем метрику ошибок запуска процесса
         } else { // запуск процесса удался
             startDelay.updateAndGet(operand -> operand > 1 ? --operand : 1); // уменьшаем задержку (плавно)
-            startedProcessInstances.incrementAndGet(); // увеличиваем локальный счетчик запущенных процессов
             statisticsCollector.incStartedProcessInstances(); // увеличиваем метрику успешных запусков процесса
         }
-    }
 
+        startingProcessInstances.decrementAndGet();
+    }
 }

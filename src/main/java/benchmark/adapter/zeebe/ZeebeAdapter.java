@@ -22,7 +22,6 @@ public class ZeebeAdapter implements BpmnEngine {
 
     private final ServiceTaskInbound serviceTaskInbound;
 
-
     @Override
     public long startProcess(String processDefinitionId, Map<String, Object> variables) {
 
@@ -43,7 +42,7 @@ public class ZeebeAdapter implements BpmnEngine {
                 event.getProcessInstanceKey());
 
             return event.getProcessInstanceKey();
-        } catch (ClientStatusException e){
+        } catch (ClientStatusException e) {
             log.debug(e.getMessage());
             return -1;
         }

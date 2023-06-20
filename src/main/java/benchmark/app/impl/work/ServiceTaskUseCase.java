@@ -12,6 +12,7 @@ import java.util.Map;
 public class ServiceTaskUseCase implements ServiceTaskInbound {
 
     private final StatisticsCollector statisticsCollector;
+
     @Override
     public void execute(Map<String, Object> variables) {
         variables.put("key1", "value1");

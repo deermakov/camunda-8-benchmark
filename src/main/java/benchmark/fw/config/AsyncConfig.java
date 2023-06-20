@@ -10,12 +10,11 @@ import java.util.concurrent.Executor;
 @Configuration
 @EnableAsync
 public class AsyncConfig {
-        @Bean(name = "processStartExecutor")
-        public Executor processStartExecutor() {
-            ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-            executor.setCorePoolSize(30);
-            executor.setMaxPoolSize(30);
-            return executor;
-        }
-
+    @Bean(name = "processStartExecutor")
+    public Executor processStartExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(30);
+        executor.setMaxPoolSize(30);
+        return executor;
+    }
 }
